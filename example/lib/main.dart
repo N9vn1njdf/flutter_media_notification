@@ -12,19 +12,44 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String active = "";
 
   @override
   void initState() {
     super.initState();
+
+    getIsActive();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> getIsActive() async {
+    try {
+      String result = await MediaNotification.active;
+      setState(() {
+        active = result;
+      });
+    } on PlatformException {
+      setState(() {
+        active = 'error';
+      });
+    }
+  }
+
+  Future<void> hide() async {
+    try {
+      await MediaNotification.hide();
+    } on PlatformException {
+
+    }
+    getIsActive();
+  }
+
   Future<void> show() async {
     try {
       await MediaNotification.show();
     } on PlatformException {
 
     }
+    getIsActive();
   }
 
   @override
@@ -35,9 +60,18 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: new Center(
-          child: FlatButton(
-            child: Text('Показать уведомление'),
-            onPressed: show,
+          child: Column(
+            children: <Widget>[
+              FlatButton(
+                child: Text('Показать уведомление'),
+                onPressed: show,
+              ),
+              FlatButton(
+                child: Text('Скрыть уведомление'),
+                onPressed: hide,
+              ),
+              Text('Статус: ' + active)
+            ],
           )
         ),
       ),
