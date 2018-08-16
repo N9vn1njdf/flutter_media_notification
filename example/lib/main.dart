@@ -12,26 +12,31 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String active = "";
+  String status = 'неактивно';
 
   @override
   void initState() {
     super.initState();
 
-    getIsActive();
-  }
+    MediaNotification.setListener('pause', () {
+      setState(() => status = 'пауза');
+    });
 
-  Future<void> getIsActive() async {
-    try {
-      String result = await MediaNotification.active;
-      setState(() {
-        active = result;
-      });
-    } on PlatformException {
-      setState(() {
-        active = 'error';
-      });
-    }
+    MediaNotification.setListener('play', () {
+      setState(() => status = 'воспроизведение');
+    });
+    
+    MediaNotification.setListener('next', () {
+      
+    });
+
+    MediaNotification.setListener('prev', () {
+      
+    });
+
+    MediaNotification.setListener('select', () {
+      
+    });
   }
 
   Future<void> hide() async {
@@ -40,16 +45,15 @@ class _MyAppState extends State<MyApp> {
     } on PlatformException {
 
     }
-    getIsActive();
   }
 
-  Future<void> show() async {
+  Future<void> show(title, author) async {
     try {
-      await MediaNotification.show();
+      await MediaNotification.show(title: title, author: author);
+      setState(() => status = 'воспроизведение');
     } on PlatformException {
 
     }
-    getIsActive();
   }
 
   @override
@@ -60,18 +64,26 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: new Center(
-          child: Column(
-            children: <Widget>[
-              FlatButton(
-                child: Text('Показать уведомление'),
-                onPressed: show,
-              ),
-              FlatButton(
-                child: Text('Скрыть уведомление'),
-                onPressed: hide,
-              ),
-              Text('Статус: ' + active)
-            ],
+          child: Container(
+            height: 200.0,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                FlatButton(
+                  child: Text('Показать уведомление'),
+                  onPressed: () => show('Заголовок', 'Автор песни'),
+                ),
+                FlatButton(
+                  child: Text('Обновить уведомление'),
+                  onPressed: () => show('Новый заголовок', 'другой автор песни'),
+                ),
+                FlatButton(
+                  child: Text('Скрыть уведомление'),
+                  onPressed: hide,
+                ),
+                Text(status)
+              ],
+            ),
           )
         ),
       ),

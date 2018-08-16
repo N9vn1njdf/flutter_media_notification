@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -22,15 +23,21 @@ public class NotificationPanel {
     private NotificationManager nManager;
     private NotificationCompat.Builder nBuilder;
     private RemoteViews remoteView;
+    private String title;
+    private String author;
     private boolean play;
 
-    public NotificationPanel(Context parent, boolean play) {
+    public NotificationPanel(Context parent, String title, String author, boolean play) {
         this.parent = parent;
+        this.title = title;
+        this.author = author;
         this.play = play;
+
         nBuilder = new NotificationCompat.Builder(parent, "media_notification")
                 .setContentTitle("Parking Meter")
-                .setSmallIcon(android.R.drawable.alert_dark_frame)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setSmallIcon(R.drawable.ic_stat_music_note)
+                .setPriority(Notification.PRIORITY_MAX)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(this.play)
                 .setOnlyAlertOnce(true)
                 .setVibrate(new long[]{0L})
@@ -38,47 +45,56 @@ public class NotificationPanel {
 
         remoteView = new RemoteViews(parent.getPackageName(), R.layout.notificationlayout);
 
+        remoteView.setTextViewText(R.id.title, title);
+        remoteView.setTextViewText(R.id.author, author);
+
         if (this.play) {
-            remoteView.setTextViewText(R.id.title, "Play notification");
-            remoteView.setImageViewResource(R.id.btn1, android.R.drawable.ic_media_pause);
+            remoteView.setImageViewResource(R.id.toggle, R.drawable.baseline_pause_black_48);
         } else {
-            remoteView.setTextViewText(R.id.title, "Pause notification");
-            remoteView.setImageViewResource(R.id.btn1, android.R.drawable.ic_media_play);
+            remoteView.setImageViewResource(R.id.toggle, R.drawable.baseline_play_arrow_black_48);
         }
 
-        //set the button listeners
         setListeners(remoteView);
         nBuilder.setContent(remoteView);
 
         Notification notification = nBuilder.build();
-//        notification.flags |= Notification.FLAG_ONGOING_EVENT;
 
         nManager = (NotificationManager) parent.getSystemService(Context.NOTIFICATION_SERVICE);
-        nManager.notify(2, notification);
+        nManager.notify(1, notification);
     }
 
     public void setListeners(RemoteViews view){
-        Intent intent = new Intent(parent, NotificationReturnSlot.class);
-        intent.setAction("toggle");
-
-        if (this.play) {
-            intent.putExtra("action", "pause");
-        } else {
-            intent.putExtra("action","play");
-        }
-
-//        intent.putExtra("extra", "extra");
+        // Пауза/Воспроизведение
+        Intent intent = new Intent(parent, NotificationReturnSlot.class)
+            .setAction("toggle")
+            .putExtra("title", this.title)
+            .putExtra("author", this.author)
+            .putExtra("action", !this.play ? "play" : "pause");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(parent, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        view.setOnClickPendingIntent(R.id.btn1, pendingIntent);
+        view.setOnClickPendingIntent(R.id.toggle, pendingIntent);
 
-//        Intent intent=new Intent(parent, NotificationReturnSlot.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//        intent.putExtra("DO", "volume");
+        // Вперед
+        Intent nextIntent = new Intent(parent, NotificationReturnSlot.class)
+                .setAction("next");
+        PendingIntent pendingNextIntent = PendingIntent.getBroadcast(parent, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        view.setOnClickPendingIntent(R.id.next, pendingNextIntent);
+
+        // Назад
+        Intent prevIntent = new Intent(parent, NotificationReturnSlot.class)
+                .setAction("prev");
+        PendingIntent pendingPrevIntent = PendingIntent.getBroadcast(parent, 0, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        view.setOnClickPendingIntent(R.id.prev, pendingPrevIntent);
+
+        // Нажатие на уведомление
+        Intent selectIntent = new Intent(parent, NotificationReturnSlot.class)
+                .setAction("select");
+        PendingIntent selectPendingIntent = PendingIntent.getBroadcast(parent, 0, selectIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        view.setOnClickPendingIntent(R.id.layout, selectPendingIntent);
     }
 
 
     public void notificationCancel() {
-        nManager.cancel(2);
+        nManager.cancel(1);
     }
 }
 

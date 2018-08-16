@@ -1,20 +1,40 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 
 class MediaNotification {
   static const MethodChannel _channel = const MethodChannel('media_notification');
-
-  static Future<String> get active async {
-    String result = await _channel.invokeMethod('isActive');
-    return result;
+  static Map<String, Function> _listeners = new Map();
+  
+  static Future<dynamic> _myUtilsHandler(MethodCall methodCall) async {
+    print('Событие - ${methodCall.method}');
+    
+    _listeners.forEach((event, callback) {
+      if (methodCall.method == event) {
+        print('Обработчик - $event');
+        callback();
+        return true;
+      }
+    });
   }
 
-  static Future show() async {
-    await _channel.invokeMethod('show');
+  static Future show({@required title, @required author, play = true}) async {
+    final Map<String, dynamic> params = <String, dynamic>{
+      'title': title,
+      'author': author,
+      'play': play
+    };
+    await _channel.invokeMethod('show', params);
+
+    _channel.setMethodCallHandler(_myUtilsHandler);
   }
 
   static Future hide() async {
     await _channel.invokeMethod('hide');
   }
+
+  static setListener(String event, Function callback) {
+    _listeners.addAll({event: callback});
+  } 
 }
