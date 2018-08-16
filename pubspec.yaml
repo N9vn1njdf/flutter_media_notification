@@ -1,6 +1,6 @@
 name: media_notification
-description: A new flutter plugin project.
-version: 0.0.2
+description: Flutter media notification
+version: 0.0.3
 author: Dmitry <dima.potapov.98@mail.ru>
 homepage: https://github.com/Zeratyll/flutter_media_notification
 

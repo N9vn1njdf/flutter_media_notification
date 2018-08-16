@@ -8,11 +8,9 @@ class MediaNotification {
   static Map<String, Function> _listeners = new Map();
   
   static Future<dynamic> _myUtilsHandler(MethodCall methodCall) async {
-    print('Событие - ${methodCall.method}');
-    
+    // Вызываем слушателя события
     _listeners.forEach((event, callback) {
       if (methodCall.method == event) {
-        print('Обработчик - $event');
         callback();
         return true;
       }
