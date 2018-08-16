@@ -12,18 +12,18 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String status = 'неактивно';
+  String status = 'hidden';
 
   @override
   void initState() {
     super.initState();
 
     MediaNotification.setListener('pause', () {
-      setState(() => status = 'пауза');
+      setState(() => status = 'pause');
     });
 
     MediaNotification.setListener('play', () {
-      setState(() => status = 'воспроизведение');
+      setState(() => status = 'play');
     });
     
     MediaNotification.setListener('next', () {
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> show(title, author) async {
     try {
       await MediaNotification.show(title: title, author: author);
-      setState(() => status = 'воспроизведение');
+      setState(() => status = 'play');
     } on PlatformException {
 
     }
@@ -65,23 +65,23 @@ class _MyAppState extends State<MyApp> {
         ),
         body: new Center(
           child: Container(
-            height: 200.0,
+            height: 250.0,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 FlatButton(
-                  child: Text('Показать уведомление'),
-                  onPressed: () => show('Заголовок', 'Автор песни'),
+                  child: Text('Show notification'),
+                  onPressed: () => show('Title', 'Song author'),
                 ),
                 FlatButton(
-                  child: Text('Обновить уведомление'),
-                  onPressed: () => show('Новый заголовок', 'другой автор песни'),
+                  child: Text('Update notification'),
+                  onPressed: () => show('New title', 'New song author'),
                 ),
                 FlatButton(
-                  child: Text('Скрыть уведомление'),
+                  child: Text('Hide notification'),
                   onPressed: hide,
                 ),
-                Text(status)
+                Text('Status: ' + status)
               ],
             ),
           )
