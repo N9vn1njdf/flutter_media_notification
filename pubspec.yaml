@@ -1,6 +1,6 @@
 name: media_notification
 description: A new flutter plugin project.
-version: 0.0.1
+version: 0.0.2
 author: Dmitry <dima.potapov.98@mail.ru>
 homepage: https://github.com/Zeratyll/flutter_media_notification
 
@@ -20,7 +20,7 @@ dev_dependencies:
 flutter:
   plugin:
     androidPackage: com.example.medianotification
-    pluginClass: MediaNotificationPlug  in
+    pluginClass: MediaNotificationPlugin
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
