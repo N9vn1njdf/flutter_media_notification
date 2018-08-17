@@ -34,9 +34,8 @@ public class NotificationPanel {
         this.play = play;
 
         nBuilder = new NotificationCompat.Builder(parent, "media_notification")
-                .setContentTitle("Parking Meter")
                 .setSmallIcon(R.drawable.ic_stat_music_note)
-                .setPriority(Notification.PRIORITY_MAX)
+                .setPriority(Notification.PRIORITY_DEFAULT)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(this.play)
                 .setOnlyAlertOnce(true)

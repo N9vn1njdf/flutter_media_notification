@@ -1,6 +1,6 @@
 # media_notification
 
-A new flutter plugin project.
+Media notification for flutter, on android
 
 ## Getting Started
 

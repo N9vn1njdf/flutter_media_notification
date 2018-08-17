@@ -42,7 +42,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> hide() async {
     try {
       await MediaNotification.hide();
-    } on PlatformException {
+      setState(() => status = 'hidden');
+  } on PlatformException {
 
     }
   }
